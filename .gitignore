@@ -12,6 +12,9 @@ backend/.env
 .vite/
 frontend/.vite/
 
+# Claude Code lokala filer
+.claude/
+
 # OS-filer
 .DS_Store
 Thumbs.db

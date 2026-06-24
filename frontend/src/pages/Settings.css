@@ -1,0 +1,92 @@
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.address-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.address-emoji {
+  font-size: 22px;
+}
+
+.address-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.address-saved {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.address-row {
+  display: flex;
+  gap: 8px;
+}
+
+.address-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.address-input:focus {
+  border-color: var(--blue);
+}
+
+.address-btn {
+  padding: 10px 16px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.address-btn:disabled {
+  background: var(--border);
+  cursor: default;
+}
+
+.status {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status.ok {
+  color: #1e8e3e;
+}
+
+.status.error {
+  color: #d93025;
+}

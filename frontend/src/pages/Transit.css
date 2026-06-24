@@ -1,0 +1,250 @@
+.transit {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Väder-kort ── */
+.wx-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.wx-title {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.wx-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.wx-left {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.wx-emoji {
+  font-size: 28px;
+}
+
+.wx-temp {
+  font-size: 42px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1;
+}
+
+.wx-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ── Resa-kort ── */
+.j-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.j-head {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.j-nav {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.j-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.j-nav:not(:disabled):hover {
+  background: var(--bg);
+}
+
+.j-center {
+  flex: 1;
+  text-align: center;
+}
+
+.j-times {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.j-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.j-muted {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.j-err-inline {
+  font-size: 13px;
+  color: #d93025;
+}
+
+/* ── Tidslinje ── */
+.tl {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tl-row {
+  display: flex;
+  gap: 10px;
+}
+
+.tl-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.tl-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.d-home,
+.d-work {
+  width: 14px;
+  height: 14px;
+  background: var(--blue);
+  border-color: var(--blue);
+  margin-top: 1px;
+}
+
+.d-stop-dim {
+  opacity: 0.4;
+}
+
+.tl-vl {
+  width: 2px;
+  flex: 1;
+  min-height: 10px;
+  margin: 2px 0;
+}
+
+.vl-walk     { background: var(--border); }
+.vl-bus      { background: var(--blue); }
+.vl-tram     { background: #1D9E75; }
+.vl-train    { background: #534AB7; }
+.vl-ferry    { background: var(--blue); }
+.vl-transfer { background: #BA7517; }
+
+.tl-content {
+  flex: 1;
+  padding-bottom: 12px;
+}
+
+.tl-last {
+  padding-bottom: 0;
+}
+
+.tl-stop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tl-sname {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sname-dim {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.tl-stime {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-leg {
+  margin-top: 5px;
+}
+
+.tl-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.b-walk     { background: #f1f3f4; color: #5f6368; }
+.b-bus      { background: #e8f0fe; color: #185FA5; }
+.b-tram     { background: #e6f4ea; color: #137333; }
+.b-train    { background: #ede7f6; color: #4527A0; }
+.b-ferry    { background: #e8f0fe; color: #185FA5; }
+.b-transfer { background: #fff3e0; color: #E65100; }
+
+/* ── Footer ── */
+.t-hint {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-top: 8px;
+}
+
+.t-updated {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.t-refresh {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}

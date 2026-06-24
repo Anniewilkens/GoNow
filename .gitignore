@@ -1,0 +1,17 @@
+# Beroenden
+node_modules/
+
+# Byggutdata
+dist/
+build/
+
+# Miljövariabler – innehåller API-nycklar, committas aldrig
+backend/.env
+
+# Vite cache
+.vite/
+frontend/.vite/
+
+# OS-filer
+.DS_Store
+Thumbs.db

@@ -14,14 +14,21 @@ export default function Settings() {
     home: 'idle',
     work: 'idle',
   });
+  const [errorMsg, setErrorMsg] = useState<Record<Field, string>>({ home: '', work: '' });
 
   const search = async (field: Field) => {
     const q = query[field].trim();
     if (!q) return;
     setStatus((s) => ({ ...s, [field]: 'loading' }));
+    setErrorMsg((e) => ({ ...e, [field]: '' }));
     try {
       const res = await fetch(`/api/geocode?address=${encodeURIComponent(q)}`);
-      if (!res.ok) throw new Error();
+      if (res.status === 404) {
+        setErrorMsg((e) => ({ ...e, [field]: 'Adressen hittades inte — prova med gatunamn och stad, t.ex. "Kämpegatan 6, Göteborg"' }));
+        setStatus((s) => ({ ...s, [field]: 'error' }));
+        return;
+      }
+      if (!res.ok) throw new Error('server');
       const data = await res.json();
       setAddress(field, {
         label: field === 'home' ? 'Hem' : 'Jobb',
@@ -31,6 +38,7 @@ export default function Settings() {
       });
       setStatus((s) => ({ ...s, [field]: 'ok' }));
     } catch {
+      setErrorMsg((e) => ({ ...e, [field]: 'Kunde inte nå servern — försök igen' }));
       setStatus((s) => ({ ...s, [field]: 'error' }));
     }
   };
@@ -48,7 +56,7 @@ export default function Settings() {
         <input
           className="address-input"
           type="text"
-          placeholder={`Sök ${title.toLowerCase()}adress…`}
+          placeholder="T.ex. Kämpegatan 6, Göteborg"
           value={query[field]}
           onChange={(e) => setQuery((q) => ({ ...q, [field]: e.target.value }))}
           onKeyDown={(e) => e.key === 'Enter' && search(field)}
@@ -62,7 +70,7 @@ export default function Settings() {
         </button>
       </div>
       {status[field] === 'ok' && <p className="status ok">✓ Sparad</p>}
-      {status[field] === 'error' && <p className="status error">Adressen hittades inte</p>}
+      {status[field] === 'error' && <p className="status error">{errorMsg[field]}</p>}
     </div>
   );
 

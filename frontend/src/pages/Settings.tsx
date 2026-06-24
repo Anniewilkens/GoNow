@@ -23,19 +23,15 @@ export default function Settings() {
     setErrorMsg((e) => ({ ...e, [field]: '' }));
     try {
       const res = await fetch(`/api/geocode?address=${encodeURIComponent(q)}`);
-      if (res.status === 404) {
+      if (!res.ok) {
         const body = await res.json().catch(() => ({})) as { error?: string };
-        const isApiMissing = !body.error || body.error !== 'Adressen hittades inte';
-        setErrorMsg((e) => ({
-          ...e,
-          [field]: isApiMissing
-            ? 'API-funktionen saknas — kontrollera Vercel-deploymenten'
-            : 'Adressen hittades inte — prova med gatunamn och stad, t.ex. "Kämpegatan 6, Göteborg"',
-        }));
+        const msg = res.status === 404
+          ? 'Adressen hittades inte — prova med gatunamn och stad, t.ex. "Kämpegatan 6, Göteborg"'
+          : (body.error ?? `Serverfel (${res.status}) — försök igen`);
+        setErrorMsg((e) => ({ ...e, [field]: msg }));
         setStatus((s) => ({ ...s, [field]: 'error' }));
         return;
       }
-      if (!res.ok) throw new Error('server');
       const data = await res.json();
       setAddress(field, {
         label: field === 'home' ? 'Hem' : 'Jobb',

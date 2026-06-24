@@ -24,7 +24,14 @@ export default function Settings() {
     try {
       const res = await fetch(`/api/geocode?address=${encodeURIComponent(q)}`);
       if (res.status === 404) {
-        setErrorMsg((e) => ({ ...e, [field]: 'Adressen hittades inte — prova med gatunamn och stad, t.ex. "Kämpegatan 6, Göteborg"' }));
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        const isApiMissing = !body.error || body.error !== 'Adressen hittades inte';
+        setErrorMsg((e) => ({
+          ...e,
+          [field]: isApiMissing
+            ? 'API-funktionen saknas — kontrollera Vercel-deploymenten'
+            : 'Adressen hittades inte — prova med gatunamn och stad, t.ex. "Kämpegatan 6, Göteborg"',
+        }));
         setStatus((s) => ({ ...s, [field]: 'error' }));
         return;
       }

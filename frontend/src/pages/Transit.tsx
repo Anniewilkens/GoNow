@@ -93,7 +93,13 @@ function toKind(category: string): LegKind {
   return 'train';
 }
 
-function buildTimeline(trip: Trip, home: SavedAddress, work: SavedAddress): TLItem[] {
+function buildTimeline(
+  trip: Trip,
+  origin: SavedAddress,
+  dest: SavedAddress,
+  originName: string,
+  destName: string,
+): TLItem[] {
   const all = toLegs(trip.LegList.Leg);
   let s = 0, e = all.length - 1;
   let wFirst: number | null = null, wLast: number | null = null;
@@ -108,12 +114,12 @@ function buildTimeline(trip: Trip, home: SavedAddress, work: SavedAddress): TLIt
   const last = transit[transit.length - 1];
 
   if (wFirst === null)
-    wFirst = walkEstimate(home.lat, home.lon, first.Origin.lat, first.Origin.lon);
+    wFirst = walkEstimate(origin.lat, origin.lon, first.Origin.lat, first.Origin.lon);
   if (wLast === null)
-    wLast = walkEstimate(last.Destination.lat, last.Destination.lon, work.lat, work.lon);
+    wLast = walkEstimate(last.Destination.lat, last.Destination.lon, dest.lat, dest.lon);
 
   const items: TLItem[] = [
-    { dotStyle: 'home', name: 'Hem', leg: { kind: 'walk', text: `${wFirst} min gång` } }
+    { dotStyle: 'home', name: originName, leg: { kind: 'walk', text: `${wFirst} min gång` } }
   ];
 
   transit.forEach((leg, i) => {
@@ -146,7 +152,7 @@ function buildTimeline(trip: Trip, home: SavedAddress, work: SavedAddress): TLIt
   });
 
   const arrival = addMins(last.Destination.time, wLast ?? 0);
-  items.push({ dotStyle: 'work', name: 'Jobbet', time: arrival });
+  items.push({ dotStyle: 'work', name: destName, time: arrival });
 
   return items;
 }
@@ -229,6 +235,7 @@ function TLRow({ item, last }: { item: TLItem; last: boolean }) {
 
 export default function Transit() {
   const { addresses } = useAddresses();
+  const [reversed, setReversed] = useState(false);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [idx, setIdx] = useState(0);
   const [wx, setWx] = useState<WxResponse | null>(null);
@@ -241,9 +248,11 @@ export default function Transit() {
     setLoading(true);
     setError('');
     const { home, work } = addresses;
+    const origin = reversed ? work : home;
+    const dest = reversed ? home : work;
     try {
       const [tRes, wRes] = await Promise.all([
-        fetch(`/api/transit?originLat=${home.lat}&originLon=${home.lon}&destLat=${work.lat}&destLon=${work.lon}`),
+        fetch(`/api/transit?originLat=${origin.lat}&originLon=${origin.lon}&destLat=${dest.lat}&destLon=${dest.lon}`),
         fetch(`/api/weather?homeLat=${home.lat}&homeLon=${home.lon}&workLat=${work.lat}&workLon=${work.lon}`),
       ]);
       if (!tRes.ok || !wRes.ok) throw new Error();
@@ -257,7 +266,7 @@ export default function Transit() {
     } finally {
       setLoading(false);
     }
-  }, [addresses]);
+  }, [addresses, reversed]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
@@ -269,16 +278,41 @@ export default function Transit() {
     );
   }
 
+  const origin = reversed ? addresses.work : addresses.home;
+  const dest = reversed ? addresses.home : addresses.work;
+  const originName = reversed ? 'Jobbet' : 'Hem';
+  const destName = reversed ? 'Hem' : 'Jobbet';
+  const originWx = reversed ? wx?.work : wx?.home;
+  const destWx = reversed ? wx?.home : wx?.work;
+
   const trip = trips[idx];
-  const timeline = trip ? buildTimeline(trip, addresses.home, addresses.work) : [];
+  const timeline = trip ? buildTimeline(trip, origin, dest, originName, destName) : [];
   const arrival = timeline.find(i => i.dotStyle === 'work')?.time ?? '';
-  const arrWx = wx?.work && arrival ? hourlyAt(wx.work, arrival) : null;
+  const arrWx = destWx && arrival ? hourlyAt(destWx, arrival) : null;
   const transitLegs = trip ? toLegs(trip.LegList.Leg).filter(l => l.type !== 'WALK') : [];
   const nChanges = Math.max(0, transitLegs.length - 1);
 
   return (
     <div className="transit">
-      {wx?.home && <WxCard title="🏠 Hemma just nu" wx={wx.home.current} />}
+      <div className="route-bar">
+        <span className="route-dir">
+          {reversed ? '🏢 Jobb → 🏠 Hem' : '🏠 Hem → 🏢 Jobb'}
+        </span>
+        <button
+          className="route-flip"
+          onClick={() => setReversed(r => !r)}
+          aria-label="Vänd rutt"
+        >
+          ⇄ Vänd
+        </button>
+      </div>
+
+      {originWx && (
+        <WxCard
+          title={reversed ? '🏢 Jobbet just nu' : '🏠 Hemma just nu'}
+          wx={originWx.current}
+        />
+      )}
 
       <div className="j-card">
         <div className="j-head">
@@ -324,7 +358,12 @@ export default function Transit() {
         )}
       </div>
 
-      {arrWx && <WxCard title={`🏢 Jobbet kl ${arrival}`} wx={arrWx} />}
+      {arrWx && (
+        <WxCard
+          title={`${reversed ? '🏠 Hemma' : '🏢 Jobbet'} kl ${arrival}`}
+          wx={arrWx}
+        />
+      )}
 
       {updated && (
         <p className="t-updated">
